@@ -8,16 +8,20 @@ upper = [chr(ord('A')+i) for i in range(26)]
 digits = [chr(ord('0')+i) for i in range(10)]
 special = [' ', '.']
 characters = lower + upper + digits + special  # especially length of 64 (log2(64) = 6)
-
+cbits = int(math.log2(len(characters)))
 bits = int(math.log2(pixel_range))
 
 
 def encode_message(image, message, nbits):
     # get rid of nbits least significant bits
     image = erase_n_lowest_bits(image, nbits)
-    # make the message into bits that can be shoved into the lsb of the pixels
+    # make the message characters into indices
     encoded_characters = [encode_char(message[i]) for i in range(len(message))]
-    print(encoded_characters)
+    # convert those indices to
+    binary_encoded_characters = [number_into_binary_string(encoded_characters[i]) for i in range(len(encoded_characters))]
+    # get all the data of indices into one string
+    data = "".join(binary_encoded_characters)
+    print(data)
     return image
 
 
@@ -52,6 +56,17 @@ def binary_string_into_number(number):
         re += (number % 2) * 2**factor
         number //= 10
         factor += 1
+    return re
+
+
+def number_into_binary_string(number):
+    re = ['0']*cbits
+    i = cbits-1
+    while number > 0:
+        re[i] = chr(ord('0') + (number % 2))
+        number >>= 1
+        i -= 1
+    re = "".join(re)
     return re
 
 
