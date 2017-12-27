@@ -6,7 +6,7 @@ from decode import decode
 
 def main():
     # Message to encode
-    message = "traps are gay"
+    message = str(input("Enter message to encode: "))
 
     # Create path
     directory = "Pics"
@@ -22,13 +22,19 @@ def main():
     # Encode message inside the image
     encoded_image = encode(image, message)
 
+    # Save encoded image
+    directory = "Pics"
+    file_name = message.split(" ")[0] + ".png"
+    path = os.path.join(directory, file_name)
+    cv2.imwrite(path, image)
+
     # Show result
     cv2.imshow("after", encoded_image)
 
     # Decode image and receive message
-    recovered_message = decode(image)
+    recovered_message = decode(encoded_image)
 
-    print("Recovered message: ", recovered_message)
+    print("Message should be the same as input: ", recovered_message)
 
     cv2.waitKey(0)
 

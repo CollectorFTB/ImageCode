@@ -1,14 +1,19 @@
 import math
 
-nbits = 2
-pixel_range = 256
+# allowed characters are only abc, ABC, 012, ' ', '.'
+
+# region Characters and constants
 lower = [chr(ord('a')+i) for i in range(26)]
 upper = [chr(ord('A')+i) for i in range(26)]
 digits = [chr(ord('0')+i) for i in range(10)]
 special = [' ', '.']
 characters = lower + upper + digits + special  # especially length of 64 (log2(64) = 6 bits)
+
+nbits = 2
+pixel_range = 256
 cbits = int(math.log2(len(characters)))
 bits = int(math.log2(pixel_range))
+# endregion
 
 # General functions
 
