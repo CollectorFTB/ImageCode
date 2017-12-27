@@ -3,19 +3,24 @@ import os
 import math
 
 pixel_range = 256
+lower = [chr(int('a')+i) for i in range(26)]
+upper = [chr(int('A')+i) for i in range(26)]
+digits = [chr(int('0')+i) for i in range(10)]
+special = [' ', '.']
+characters = lower + upper + digits + special
+
 bits = int(math.log2(pixel_range))
 
 
-def check_changed_pixel(a,b):
-    return [a[i] == b[i] for i in range(3)]
-
-
 def encode_message(image, message, nbits):
-    image = erase_nbits(image, nbits)
+    # get rid of nbits least significant bits
+    image = erase_first_nbits(image, nbits)
+    # make the message into bits that can be shoved into the lsb of the pixels
+
     return image
 
 
-def erase_nbits(image, nbits):
+def erase_first_nbits(image, nbits):
     # Generate string with nbits of 0 in the lsb side
     and_string = (bits-nbits)*'1' + nbits*'0'
     # Turn it into and integer so you can bitwise and it
@@ -26,7 +31,7 @@ def erase_nbits(image, nbits):
 
     for i in range(height):
         for j in range(width):
-            # bitwise all the channels
+            # bitwise and all the channels with the and number
             image[i][j] = [color & and_number for color in image[i][j]]
     return image
 
@@ -47,6 +52,20 @@ def binary_string_into_binary(number):
         number //= 10
         factor += 1
     return re
+
+
+def encode_char(value):
+    if characters.count(value) == 0:
+        raise Exception("can't encode character, character not recognized")
+    index = characters.index(value)
+    return index
+
+
+def decode_char(value):
+    if value >= len(characters):
+        raise Exception("can't decode character, out of bounds")
+    char = characters[value]
+    return char
 
 
 def main():
