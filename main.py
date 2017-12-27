@@ -12,9 +12,22 @@ cbits = int(math.log2(len(characters)))
 bits = int(math.log2(pixel_range))
 
 
-def encode_message(image, message, nbits):
+# Encoding part
+
+
+def encode(image, message, nbits):
+    encoded_message = encode_message(message, nbits)
+
+    # Data hiding
     # get rid of nbits least significant bits
     image = erase_n_lowest_bits(image, nbits)
+    # put the data into those bits
+    image = insert_data(image, encoded_message)
+    return image
+
+
+def encode_message(message, nbits):
+    # Message encoding
     # make the message characters into indices
     encoded_characters = [encode_char(message[i]) for i in range(len(message))]
     # convert those indices to
@@ -25,10 +38,7 @@ def encode_message(image, message, nbits):
     arranged_data = split_data(data, nbits)
     # turn the arranged data into numbers
     arranged_data = [binary_string_into_number(arranged_data[i]) for i in range(len(arranged_data))]
-    print(arranged_data)
-    # put the data into the image
-    image = insert_data(image, arranged_data)
-    return image
+    return arranged_data
 
 
 def erase_n_lowest_bits(image, nbits):
@@ -65,6 +75,7 @@ def insert_data(image, data):
     data_len = len(data)
     height = len(image)
     width = len(image[0])
+
     for i in range(height):
         for j in range(width):
             for k in range(3):
@@ -82,11 +93,21 @@ def encode_char(value):
     return index
 
 
+# Decoding part
+
+
+def decode(image, nbits):
+    return 0
+
+
 def decode_char(value):
     if value >= len(characters):
         raise Exception("can't decode character, out of bounds")
     char = characters[value]
     return char
+
+
+# General functions
 
 
 def binary_string_into_number(number):
@@ -119,6 +140,12 @@ def number_into_binary_string(number):
 
 
 def main():
+    # Message to encode
+    message = "traps are gay"
+
+    # Number of bits to use
+    nbits = 2
+
     # Create path
     directory = "Pics"
     file_name = "test.png"
@@ -131,10 +158,15 @@ def main():
     cv2.imshow("before", image)
 
     # Encode message inside the image
-    re = encode_message(image, "traps are gay", 2)
+    encoded_image = encode(image, message, nbits)
+
+    # Decode image and receive message
+    recovered_message = decode(image, nbits)
+
+    print("Recovered message: ", recovered_message)
 
     # Show result
-    cv2.imshow("after", re)
+    cv2.imshow("after", encoded_image)
     cv2.waitKey(0)
 
 if __name__ == "__main__":
