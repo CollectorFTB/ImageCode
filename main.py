@@ -3,28 +3,29 @@ import os
 import math
 
 pixel_range = 256
-lower = [chr(int('a')+i) for i in range(26)]
-upper = [chr(int('A')+i) for i in range(26)]
-digits = [chr(int('0')+i) for i in range(10)]
+lower = [chr(ord('a')+i) for i in range(26)]
+upper = [chr(ord('A')+i) for i in range(26)]
+digits = [chr(ord('0')+i) for i in range(10)]
 special = [' ', '.']
-characters = lower + upper + digits + special
+characters = lower + upper + digits + special  # especially length of 64 (log2(64) = 6)
 
 bits = int(math.log2(pixel_range))
 
 
 def encode_message(image, message, nbits):
     # get rid of nbits least significant bits
-    image = erase_first_nbits(image, nbits)
+    image = erase_n_lowest_bits(image, nbits)
     # make the message into bits that can be shoved into the lsb of the pixels
-
+    encoded_characters = [encode_char(message[i]) for i in range(len(message))]
+    print(encoded_characters)
     return image
 
 
-def erase_first_nbits(image, nbits):
+def erase_n_lowest_bits(image, nbits):
     # Generate string with nbits of 0 in the lsb side
     and_string = (bits-nbits)*'1' + nbits*'0'
     # Turn it into and integer so you can bitwise and it
-    and_number = binary_string_into_binary(and_string)
+    and_number = binary_string_into_number(and_string)
     # just for optimization
     height = len(image)
     width = len(image[0])
@@ -36,7 +37,7 @@ def erase_first_nbits(image, nbits):
     return image
 
 
-def binary_string_into_binary(number):
+def binary_string_into_number(number):
     """
     :param number: string representing a binary number 
     :return: numeric value of number
@@ -81,7 +82,7 @@ def main():
     cv2.imshow("before", image)
 
     # Encode message inside the image
-    re = encode_message(image, "traps are gay", 1)
+    re = encode_message(image, "traps are gay", 2)
 
     # Show result
     cv2.imshow("after", re)
